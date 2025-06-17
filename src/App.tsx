@@ -3,10 +3,20 @@ import EstimateTable, { type ITasks } from "./component/estimateTable";
 
 const App = () => {
   const [tasks, setTasks] = useState<ITasks[]>([
-    { id: 1, name: "juhee", estimate: 2, time: 10, isRunning: false },
-    { id: 2, name: "juhee", estimate: 1, time: 0, isRunning: false },
-    { id: 3, name: "juhee", estimate: 1, time: 0, isRunning: false },
-    { id: 4, name: "juhee", estimate: 1, time: 0, isRunning: false },
+    {
+      id: 1,
+      name: "juhee",
+      estimate: 1,
+      isRunning: false,
+      time: 0,
+    },
+    {
+      id: 2,
+      name: "shrikant",
+      estimate: 10,
+      isRunning: false,
+      time: 0,
+    },
   ]);
 
   const intervalRefs = useRef<{ [key: number]: NodeJS.Timeout }>({});

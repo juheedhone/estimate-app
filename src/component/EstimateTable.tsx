@@ -1,4 +1,4 @@
- export interface ITasks {
+export interface ITasks {
   id: number;
   name: string;
   estimate: number;
@@ -12,7 +12,7 @@ interface Props {
   runningTaskId: number | null;
 }
 
-const EstimateTable = ({ tasks, onClicked , runningTaskId}: Props) => {
+const EstimateTable = ({ tasks, onClicked, runningTaskId }: Props) => {
   return (
     <table className="table table-bordered">
       <thead>
@@ -24,17 +24,18 @@ const EstimateTable = ({ tasks, onClicked , runningTaskId}: Props) => {
         </tr>
       </thead>
       <tbody>
-
         {tasks.map((task) => {
-             const isRunning = runningTaskId === task.id; 
+          const isRunning = runningTaskId === task.id;
           const minutes = Math.floor(task.time / 60);
           const seconds = task.time % 60;
           const formatted = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-
           return (
             <tr key={task.id}>
               <td>{task.name}</td>
-              <td>{task.estimate} min</td>
+              <td>
+                {Math.floor(task.estimate / 60)}Hour
+                {task.estimate % 60}Min
+              </td>
               <td>{formatted}</td>
               <td>
                 <button
