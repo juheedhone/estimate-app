@@ -1,10 +1,26 @@
-import { useState, type FormEvent } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import z from "zod";
 
-const EstimateAdd = () => {
-  const [estimations, setEstimations] = useState({
-    task: "",
-    hours: 0,
-    minutes: 0,
+interface Props {
+  onSubmit: (data: EstimateAdd) => void;
+}
+
+const schema = z.object({
+  task: z.string().min(3).max(50),
+  hour: z.number({ invalid_type_error: "hour is required" }),
+  minutes: z.number({ invalid_type_error: "minutes is required" }),
+});
+
+type EstimateAdd = z.infer<typeof schema>;
+
+const EstimateAdd = ({onSubmit}: Props) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<EstimateAdd>({
+    resolver: zodResolver(schema),
   });
 
   const formatTime = (hours: number, minutes: number) => {
@@ -13,61 +29,41 @@ const EstimateAdd = () => {
     return `${formattedHours}:${formattedMinutes}`;
   };
 
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-
-    const displayTime = formatTime(estimations.hours, estimations.minutes);
-
-    console.log({
-      task: estimations.task,
-      displayTime, // like "02:05"
-      totalMinutes: estimations.hours * 60 + estimations.minutes,
-      // totalSeconds: (estimations.hours * 60 + estimations.minutes) * 60,
-    });
-  };
-
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-3">
         <label htmlFor="task" className="form-label">
           Add Task
         </label>
         <input
-          onChange={(event) =>
-            setEstimations({ ...estimations, task: event.target.value })
-          }
+          {...register("task")}
           id="task"
           type="text"
           className="form-control"
         />
+        {errors.task && <p className="text-danger">{errors.task.message}</p>}
       </div>
 
       <div className="mb-3">
         <label className="form-label">Add Estimation Time</label>
         <div className="d-flex gap-2">
           <input
+            {...register("hour", { valueAsNumber: true })}
             type="number"
             className="form-control"
-            onChange={(e) =>
-              setEstimations({
-                ...estimations,
-                hours: parseInt(e.target.value) || 0,
-              })
-            }
             min="0"
           />
+          {errors.hour && <p className="text-danger">{errors.hour.message}</p>}
           <input
+            {...register("minutes", { valueAsNumber: true })}
             type="number"
             className="form-control"
-            onChange={(e) =>
-              setEstimations({
-                ...estimations,
-                minutes: parseInt(e.target.value) || 0,
-              })
-            }
             min="0"
             max="59"
           />
+          {errors.minutes && (
+            <p className="text-danger">{errors.minutes.message}</p>
+          )}
         </div>
       </div>
 
@@ -75,8 +71,7 @@ const EstimateAdd = () => {
 
       {/* Display real-time preview */}
       <div className="mt-3">
-        <strong>Preview Time:</strong>{" "}
-        {formatTime(estimations.hours, estimations.minutes)}
+        {/* <strong>Preview Time:</strong> {formatTime(hours, minutes)} */}
       </div>
     </form>
   );
