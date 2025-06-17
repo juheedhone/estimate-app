@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import EstimateAdd from "./component/EstimateAdd";
 import EstimateTable, { type ITasks } from "./component/estimateTable";
 
 const App = () => {
@@ -55,7 +56,9 @@ const App = () => {
 
   return (
     <div className="p-4">
+      <EstimateAdd />
       <h2 className="text-xl font-bold mb-4">Task Timer Table</h2>
+
       <EstimateTable
         tasks={tasks}
         onClicked={toggleTimer}
