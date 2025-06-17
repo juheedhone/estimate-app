@@ -1,0 +1,55 @@
+ export interface ITasks {
+  id: number;
+  name: string;
+  estimate: number;
+  time: number; // in seconds
+  isRunning: boolean;
+}
+
+interface Props {
+  tasks: ITasks[];
+  onClicked: (id: number) => void;
+  runningTaskId: number | null;
+}
+
+const EstimateTable = ({ tasks, onClicked , runningTaskId}: Props) => {
+  return (
+    <table className="table table-bordered">
+      <thead>
+        <tr>
+          <td>Task Name</td>
+          <td>Time Estimate</td>
+          <td>Timer</td>
+          <td>Action</td>
+        </tr>
+      </thead>
+      <tbody>
+
+        {tasks.map((task) => {
+             const isRunning = runningTaskId === task.id; 
+          const minutes = Math.floor(task.time / 60);
+          const seconds = task.time % 60;
+          const formatted = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+
+          return (
+            <tr key={task.id}>
+              <td>{task.name}</td>
+              <td>{task.estimate} min</td>
+              <td>{formatted}</td>
+              <td>
+                <button
+                  className={`btn ${isRunning ? "btn-success" : "btn-danger"}`}
+                  onClick={() => onClicked(task.id)}
+                >
+                  {task.isRunning ? "Stop" : "Start"}
+                </button>
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+};
+
+export default EstimateTable;
