@@ -1,9 +1,9 @@
 export interface ITasks {
   id: number;
-  name: string;
-  estimate: number;
-  time: number; // in seconds
-  isRunning: boolean;
+  task: string;
+  hour: number;
+  minutes: number; // in seconds
+  isRunning?: boolean;
 }
 
 interface Props {
@@ -26,15 +26,15 @@ const EstimateTable = ({ tasks, onClicked, runningTaskId }: Props) => {
       <tbody>
         {tasks.map((task) => {
           const isRunning = runningTaskId === task.id;
-          const minutes = Math.floor(task.time / 60);
-          const seconds = task.time % 60;
+          const minutes = Math.floor(task.minutes / 60);
+          const seconds = task.minutes % 60;
           const formatted = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
           return (
             <tr key={task.id}>
-              <td>{task.name}</td>
+              <td>{task.task}</td>
               <td>
-                {Math.floor(task.estimate / 60)}Hour
-                {task.estimate % 60}Min
+                {Math.floor(task.hour / 60)}Hour
+                {task.minutes % 60}Min
               </td>
               <td>{formatted}</td>
               <td>

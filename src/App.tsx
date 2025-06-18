@@ -6,17 +6,17 @@ const App = () => {
   const [tasks, setTasks] = useState<ITasks[]>([
     {
       id: 1,
-      name: "juhee",
-      estimate: 1,
+      task: "juhee",
+      hour: 1,
+      minutes: 0,
       isRunning: false,
-      time: 0,
     },
     {
       id: 2,
-      name: "shrikant",
-      estimate: 10,
+      task: "shrikant",
+      hour: 10,
+      minutes: 0,
       isRunning: false,
-      time: 0,
     },
   ]);
 
@@ -40,7 +40,7 @@ const App = () => {
       intervalRefs.current[id] = setInterval(() => {
         setTasks((prev) =>
           prev.map((task) =>
-            task.id === id ? { ...task, time: task.time + 1 } : task
+            task.id === id ? { ...task, time: task.minutes + 1 } : task
           )
         );
       }, 1000);
@@ -56,9 +56,15 @@ const App = () => {
 
   return (
     <div className="p-4">
-      <EstimateAdd />
-      <h2 className="text-xl font-bold mb-4">Task Timer Table</h2>
+      <div className="mb-3">
+        <EstimateAdd
+          onSubmit={(task) =>
+            setTasks([...tasks, { ...task, id: tasks.length + 1 }])
+          }
+        />
+      </div>
 
+      <h2 className="text-xl font-bold mb-4">Task Timer Table</h2>
       <EstimateTable
         tasks={tasks}
         onClicked={toggleTimer}
