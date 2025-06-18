@@ -1,53 +1,62 @@
 import { useEffect, useRef, useState } from "react";
 import EstimateAdd from "./component/EstimateAdd";
-import EstimateTable, { type ITasks } from "./component/estimateTable";
+import type { ITasks } from "./component/EstimateTable";
+import EstimateTable from "./component/EstimateTable";
 
 const App = () => {
-  const [tasks, setTasks] = useState<ITasks[]>([
-    {
-      id: 1,
-      task: "juhee",
-      hour: 1,
-      minutes: 0,
-      isRunning: false,
-    },
-    {
-      id: 2,
-      task: "shrikant",
-      hour: 10,
-      minutes: 0,
-      isRunning: false,
-    },
-  ]);
-
+  const [tasks, setTasks] = useState<ITasks[]>([]);
   const intervalRefs = useRef<{ [key: number]: NodeJS.Timeout }>({});
-  const [runningTaskId, setRunningTaskId] = useState<number | null>(null);
+
   const toggleTimer = (id: number) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, isRunning: !task.isRunning } : task
-      )
-    );
+    const task = tasks.find((t) => t.id === id);
 
-    const currentTask = tasks.find((task) => task.id === id);
-
-    if (currentTask?.isRunning) {
-      // Stop timer
+    if (task?.isRunning) {
       clearInterval(intervalRefs.current[id]);
       delete intervalRefs.current[id];
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, isRunning: false } : t))
+      );
     } else {
-      // Start timer
+      // Reset seconds to zero and start timer
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === id ? { ...t, isRunning: true, seconds: 0 } : t
+        )
+      );
+
       intervalRefs.current[id] = setInterval(() => {
         setTasks((prev) =>
-          prev.map((task) =>
-            task.id === id ? { ...task, time: task.minutes + 1 } : task
-          )
+          prev.map((t) => (t.id === id ? { ...t, seconds: t.seconds + 1 } : t))
         );
       }, 1000);
     }
   };
 
-  // Cleanup on unmount
+  const resetTimer = (id: number) => {
+    clearInterval(intervalRefs.current[id]);
+    delete intervalRefs.current[id];
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, seconds: 0, isRunning: false } : t
+      )
+    );
+  };
+
+  const handleAddTask = (data: {
+    task: string;
+    hour: number;
+    minutes: number;
+  }) => {
+    const newTask: ITasks = {
+      id: tasks.length + 1,
+      task: data.task,
+      estimationSeconds: data.hour * 3600 + data.minutes * 60, // stored separately
+      seconds: 0, // live timer starts from 0 on click
+      isRunning: false,
+    };
+    setTasks((prev) => [...prev, newTask]);
+  };
+
   useEffect(() => {
     return () => {
       Object.values(intervalRefs.current).forEach(clearInterval);
@@ -56,19 +65,12 @@ const App = () => {
 
   return (
     <div className="p-4">
-      <div className="mb-3">
-        <EstimateAdd
-          onSubmit={(task) =>
-            setTasks([...tasks, { ...task, id: tasks.length + 1 }])
-          }
-        />
-      </div>
-
+      <EstimateAdd onSubmit={handleAddTask} />
       <h2 className="text-xl font-bold mb-4">Task Timer Table</h2>
       <EstimateTable
         tasks={tasks}
         onClicked={toggleTimer}
-        runningTaskId={runningTaskId}
+        onReset={resetTimer}
       />
     </div>
   );
