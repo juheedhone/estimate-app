@@ -65,26 +65,33 @@ const EstimateAdd = ({ onSubmit }: Props) => {
       <div className="mb-3">
         <label className="form-label">Estimation Time</label>
         <div className="d-flex gap-2">
-          <input
-            {...register("hour", { valueAsNumber: true })}
-            type="number"
-            min="0"
-            className={`form-control ${errors.hour ? "is-invalid" : ""}`}
-            placeholder="Hours"
-          />
-          <input
-            {...register("minutes", { valueAsNumber: true })}
-            type="number"
-            min="0"
-            max="59"
-            className={`form-control ${errors.minutes ? "is-invalid" : ""}`}
-            placeholder="Minutes"
-          />
+          <div className="flex-grow-1">
+            <input
+              {...register("hour", { valueAsNumber: true })}
+              type="number"
+              min="0"
+              className={`form-control ${errors.hour ? "is-invalid" : ""}`}
+              placeholder="Hours"
+            />
+            {errors.hour && (
+              <div className="invalid-feedback">{errors.hour.message}</div>
+            )}
+          </div>
+
+          <div className="flex-grow-1">
+            <input
+              {...register("minutes", { valueAsNumber: true })}
+              type="number"
+              min="0"
+              max="59"
+              className={`form-control ${errors.minutes ? "is-invalid" : ""}`}
+              placeholder="Minutes"
+            />
+            {errors.minutes && (
+              <div className="invalid-feedback">{errors.minutes.message}</div>
+            )}
+          </div>
         </div>
-        {errors.hour && <p className="text-danger">{errors.hour.message}</p>}
-        {errors.minutes && (
-          <p className="text-danger">{errors.minutes.message}</p>
-        )}
       </div>
 
       <button className="btn btn-primary" type="submit">
