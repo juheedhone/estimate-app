@@ -5,7 +5,7 @@ import EstimateTable from "./component/EstimateTable";
 
 const App = () => {
   const [tasks, setTasks] = useState<ITasks[]>([]);
-  const intervalRefs = useRef<{ [key: number]: NodeJS.Timeout }>({});
+  const intervalRefs = useRef<{ [key: number]: number }>({});
 
   const toggleTimer = (id: number) => {
     const task = tasks.find((t) => t.id === id);
@@ -19,9 +19,7 @@ const App = () => {
     } else {
       // Reset seconds to zero and start timer
       setTasks((prev) =>
-        prev.map((t) =>
-          t.id === id ? { ...t, isRunning: true, seconds: 0 } : t
-        )
+        prev.map((t) => (t.id === id ? { ...t, isRunning: true } : t))
       );
 
       intervalRefs.current[id] = setInterval(() => {
@@ -44,13 +42,14 @@ const App = () => {
 
   const handleAddTask = (data: {
     task: string;
-    hour: number;
+    hour?: number;
     minutes: number;
   }) => {
     const newTask: ITasks = {
       id: tasks.length + 1,
       task: data.task,
-      estimationSeconds: data.hour * 3600 + data.minutes * 60, // stored separately
+      estimationSeconds: (data.hour || 0) * 3600 + data.minutes * 60,
+
       seconds: 0, // live timer starts from 0 on click
       isRunning: false,
     };
