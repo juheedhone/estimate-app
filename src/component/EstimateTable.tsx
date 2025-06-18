@@ -1,7 +1,7 @@
 export interface ITasks {
   id: number;
-  task: string;
-  estimationSeconds: number; // for showing estimation separately
+  name: string;
+  estimate: number; // for showing estimation separately
   seconds: number; // live timer starting from 0
   isRunning?: boolean;
 }
@@ -25,8 +25,8 @@ const EstimateTable = ({ tasks, onClicked, onReset }: Props) => {
       </thead>
       <tbody>
         {tasks.map((task) => {
-          const estHours = Math.floor(task.estimationSeconds / 3600);
-          const estMinutes = Math.floor((task.estimationSeconds % 3600) / 60);
+          const estHours = Math.floor(task.estimate / 3600);
+          const estMinutes = Math.floor((task.estimate % 3600) / 60);
 
           const liveHours = Math.floor(task.seconds / 3600);
           const liveMinutes = Math.floor((task.seconds % 3600) / 60);
@@ -41,7 +41,7 @@ const EstimateTable = ({ tasks, onClicked, onReset }: Props) => {
 
           return (
             <tr key={task.id}>
-              <td>{task.task}</td>
+              <td>{task.name}</td>
               <td>{`${estHours}h ${estMinutes}m`}</td>
               <td>{formattedLiveTime}</td>
               <td>
