@@ -8,11 +8,15 @@ interface Props {
 
 const schema = z.object({
   task: z.string().min(3, "Task must be at least 3 characters").max(50),
-  hour: z.number({ invalid_type_error: "Hour is required" }).min(0),
+  hour: z
+    .number({ invalid_type_error: "Hour must be a number" })
+    .min(0, "Hour must be >= 0")
+    .optional()
+    .or(z.nan()), // Allow empty input
   minutes: z
     .number({ invalid_type_error: "Minutes is required" })
-    .min(0)
-    .max(59),
+    .min(0, "Minutes must be >= 0")
+    .max(59, "Minutes must be < 60"),
 });
 
 type EstimateAdd = z.infer<typeof schema>;
@@ -26,17 +30,20 @@ const EstimateAdd = ({ onSubmit }: Props) => {
     reset,
   } = useForm<EstimateAdd>({
     resolver: zodResolver(schema),
-    defaultValues: { task: "", hour: 0, minutes: 0 },
+    defaultValues: { task: "" }, // No default for hour & minutes
   });
 
   const watchedHour = useWatch({ control, name: "hour" });
   const watchedMinutes = useWatch({ control, name: "minutes" });
 
-  const formatTime = (h: number, m: number) =>
+  const formatTime = (h?: number, m?: number) =>
     `${String(h || 0).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}`;
 
   const onSubmitHandler = (data: EstimateAdd) => {
-    onSubmit(data);
+    onSubmit({
+      ...data,
+      hour: isNaN(data.hour as number) ? 0 : (data.hour as number),
+    });
     reset();
   };
 
