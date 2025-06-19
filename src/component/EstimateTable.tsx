@@ -15,19 +15,22 @@ interface Props {
 
 const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
   return (
-    <div className="bg-white p-4 rounded-lg shadow overflow-x-auto">
-      <h2 className="text-xl font-semibold mb-3">Task Timer Table</h2>
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="border-b">
-            <th className="py-2 px-3">Task Name</th>
-            <th className="py-2 px-3">Estimation</th>
-            <th className="py-2 px-3">Timer</th>
-            <th className="py-2 px-3">Action</th>
+    <div className="bg-white p-4 rounded-xl shadow-lg overflow-x-auto">
+      <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+        Task Timer Table
+      </h2>
+      <table className="w-full text-left border-collapse rounded-xl overflow-hidden">
+        <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
+          <tr>
+            <th className="py-3 px-4 border-r border-gray-300">Task Name</th>
+            <th className="py-3 px-4 border-r border-gray-300">Estimation</th>
+            <th className="py-3 px-4 border-r border-gray-300">Timer</th>
+            <th className="py-3 px-4 text-center">Actions</th>{" "}
+            {/* ✅ Action header centered */}
           </tr>
         </thead>
         <tbody>
-          {tasks.map((task) => {
+          {tasks.map((task, index) => {
             const estHours = Math.floor(task.estimate / 3600);
             const estMinutes = Math.floor((task.estimate % 3600) / 60);
 
@@ -43,38 +46,57 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
             ).padStart(2, "0")}`;
 
             return (
-              <tr key={task.id} className="border-b last:border-0">
-                <td className="py-2 px-3">{task.name}</td>
-                <td className="py-2 px-3">{`${estHours}h ${estMinutes}m`}</td>
-                <td className="py-2 px-3 font-mono">{formattedLiveTime}</td>
-                <td className="py-2 px-3 space-x-2">
-                  <span className="px-1">
+              <tr
+                key={task.id}
+                className={`border-b border-gray-200 ${
+                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                } hover:bg-gray-100`}
+              >
+                <td className="py-3 px-4 border-r border-gray-200">
+                  {task.name}
+                </td>
+                <td className="py-3 px-4 border-r border-gray-200">{`${estHours}h ${estMinutes}m`}</td>
+                <td className="py-3 px-4 border-r border-gray-200 font-mono">
+                  {formattedLiveTime}
+                </td>
+                <td className="py-3 px-4 border-gray-200 text-center">
+                  {" "}
+                  {/* ✅ Buttons in center */}
+                  <div className="flex justify-center gap-2">
+                    {" "}
+                    {/* ✅ Buttons in single line */}
                     <button
-                      onClick={() => onClicked(task.id)}
-                      className={`px-3 py-1  rounded  ${
-                        task.isRunning
-                          ? "border text-red-500 border-red-400 hover:bg-red-200"
-                          : "border text-green-500  hover:bg-green-200"
+                      onClick={() => {
+                        if (task.seconds < task.estimate) onClicked(task.id);
+                      }}
+                      disabled={task.seconds >= task.estimate}
+                      className={`w-14 py-1 rounded border text-sm font-medium ${
+                        task.seconds >= task.estimate
+                          ? "text-gray-500 cursor-not-allowed bg-gray-100"
+                          : task.isRunning
+                          ? "text-red-500 border-red-400 hover:bg-red-200"
+                          : "text-green-500 hover:bg-green-200"
                       }`}
                     >
-                      {task.isRunning ? "Stop" : "Start"}
+                      {task.seconds >= task.estimate
+                        ? "Time Over"
+                        : task.isRunning
+                        ? "Stop"
+                        : "Start"}
                     </button>
-                  </span>
-
-                  <span className="px-1">
                     <button
                       onClick={() => onReset(task.id)}
-                      className="px-3 py-1 border rounded  text-black hover:bg-gray-300"
+                      className="w-14 py-1 border rounded text-black hover:bg-gray-300 text-sm"
                     >
                       Reset
                     </button>
-                  </span>
-                  <button
-                    onClick={() => onDelete(task.id)}
-                    className="px-3 py-1 border rounded text-red-500 hover:bg-red-200"
-                  >
-                    Delete
-                  </button>
+                    <button
+                      onClick={() => onDelete(task.id)}
+                      className="w-14 py-1 border rounded text-red-500 hover:bg-red-200 text-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             );
