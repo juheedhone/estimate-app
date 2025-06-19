@@ -74,6 +74,12 @@ const App = () => {
       .then((res) => setTasks([res.data.data, ...tasks]))
       .catch((err) => console.log(err));
   };
+  const onDelete = (id: number) => {
+    setTasks(tasks.filter((t) => t.id !== id));
+    axios.delete(
+      "https://estimate-tracker.shrikant.workers.dev/task/delete/" + id
+    );
+  };
 
   useEffect(() => {
     return () => {
@@ -111,6 +117,7 @@ const App = () => {
       <div className="max-w-3xl mx-auto space-y-6">
         <EstimateAdd onSubmit={handleAddTask} />
         <EstimateTable
+          onDelete={onDelete}
           tasks={tasks}
           onClicked={toggleTimer}
           onReset={resetTimer}

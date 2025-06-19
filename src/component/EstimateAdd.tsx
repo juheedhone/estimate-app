@@ -102,10 +102,6 @@ const EstimateAdd = ({ onSubmit }: Props) => {
             )}
           </div>
         </div>
-
-        {/* {errors.minutes && (
-          <p className="text-red-500 text-sm mt-1">{errors.minutes.message}</p>
-        )} */}
       </div>
 
       <button
