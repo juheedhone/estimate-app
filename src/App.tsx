@@ -33,9 +33,23 @@ const App = () => {
       setTasks((prev) =>
         prev.map((t) => (t.id === id ? { ...t, isRunning: true } : t))
       );
+
       intervalRefs.current[id] = window.setInterval(() => {
         setTasks((prev) =>
-          prev.map((t) => (t.id === id ? { ...t, seconds: t.seconds + 1 } : t))
+          prev.map((t) => {
+            if (t.id !== id || !t.isRunning) return t;
+
+            const updatedSeconds = t.seconds + 1;
+
+            // ✅ Stop the timer automatically when estimation is reached
+            if (updatedSeconds >= t.estimate) {
+              clearInterval(intervalRefs.current[id]);
+              delete intervalRefs.current[id];
+              return { ...t, seconds: updatedSeconds, isRunning: false };
+            }
+
+            return { ...t, seconds: updatedSeconds };
+          })
         );
       }, 1000);
     }
@@ -92,10 +106,6 @@ const App = () => {
       .get<{ data: IFetchTask[] }>(
         "https://estimate-tracker.shrikant.workers.dev/task/fetchAll"
       )
-      // id: number;
-      // name: string;
-      // estimate: number; // for showing estimation separately
-      // seconds: number; /
       .then((res) => {
         setTasks(
           res.data.data.map((d) => ({
