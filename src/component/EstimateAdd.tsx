@@ -10,15 +10,14 @@ const schema = z.object({
   task: z.string().min(3, "Task must be at least 3 characters").max(50),
   hour: z
     .number({ invalid_type_error: "Hour must be a number" })
-    .min(0, "Hour must be >= 0")
+    .min(0)
     .optional()
-    .or(z.nan()), 
+    .or(z.nan()),
   minutes: z
     .number({ invalid_type_error: "Minutes is required" })
-    .min(0, "Minutes must be >= 0")
-    .max(59, "Minutes must be < 60"),
+    .min(0)
+    .max(59),
 });
-
 type EstimateAdd = z.infer<typeof schema>;
 
 const EstimateAdd = ({ onSubmit }: Props) => {
@@ -30,14 +29,11 @@ const EstimateAdd = ({ onSubmit }: Props) => {
     reset,
   } = useForm<EstimateAdd>({
     resolver: zodResolver(schema),
-    defaultValues: { task: "" }, 
+    defaultValues: { task: "" },
   });
 
   const watchedHour = useWatch({ control, name: "hour" });
   const watchedMinutes = useWatch({ control, name: "minutes" });
-
-  const formatTime = (h?: number, m?: number) =>
-    `${String(h || 0).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}`;
 
   const onSubmitHandler = (data: EstimateAdd) => {
     onSubmit({
@@ -47,58 +43,79 @@ const EstimateAdd = ({ onSubmit }: Props) => {
     reset();
   };
 
+  const formatTime = (h?: number, m?: number) =>
+    `${String(h || 0).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}`;
+
   return (
-    <form onSubmit={handleSubmit(onSubmitHandler)} className="mb-4">
-      <div className="mb-3">
-        <label className="form-label">Add Task</label>
+    <form
+      onSubmit={handleSubmit(onSubmitHandler)}
+      className="bg-white p-4 rounded-lg shadow space-y-4"
+    >
+      <div>
+        <label className="block font-semibold mb-1">Add Task</label>
         <input
           {...register("task")}
-          className={`form-control ${errors.task ? "is-invalid" : ""}`}
+          className={`w-full border rounded px-3 py-2 ${
+            errors.task ? "border-red-500" : "border-gray-300"
+          }`}
           type="text"
           placeholder="Task Name"
         />
         {errors.task && (
-          <div className="invalid-feedback">{errors.task.message}</div>
+          <p className="text-red-500 text-sm mt-1">{errors.task.message}</p>
         )}
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Estimation Time</label>
-        <div className="d-flex gap-2">
-          <div className="flex-grow-1">
+      <div>
+        <label className="block font-semibold mb-1">Estimation Time</label>
+        <div className="flex gap-2">
+          <div className="w-1/2">
             <input
               {...register("hour", { valueAsNumber: true })}
               type="number"
               min="0"
-              className={`form-control ${errors.hour ? "is-invalid" : ""}`}
               placeholder="Hours"
+              className={`w-full border rounded px-3 py-2 ${
+                errors.hour ? "border-red-500" : "border-gray-300"
+              }`}
             />
             {errors.hour && (
-              <div className="invalid-feedback">{errors.hour.message}</div>
+              <p className="text-red-500 text-sm mt-1">{errors.hour.message}</p>
             )}
           </div>
 
-          <div className="flex-grow-1">
+          <div className="w-1/2">
             <input
               {...register("minutes", { valueAsNumber: true })}
               type="number"
               min="0"
               max="59"
-              className={`form-control ${errors.minutes ? "is-invalid" : ""}`}
               placeholder="Minutes"
+              className={`w-full border rounded px-3 py-2 ${
+                errors.minutes ? "border-red-500" : "border-gray-300"
+              }`}
             />
             {errors.minutes && (
-              <div className="invalid-feedback">{errors.minutes.message}</div>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.minutes.message}
+              </p>
             )}
           </div>
         </div>
+
+        {/* {errors.minutes && (
+          <p className="text-red-500 text-sm mt-1">{errors.minutes.message}</p>
+        )} */}
       </div>
 
-      <button className="btn btn-primary" type="submit">
+      <button
+        type="submit"
+        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+      >
         Submit
       </button>
 
-      <div className="mt-3">
+      <div className="mt-2 text-gray-600 text-sm">
         <strong>Preview Time:</strong> {formatTime(watchedHour, watchedMinutes)}
       </div>
     </form>

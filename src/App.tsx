@@ -23,7 +23,6 @@ const App = () => {
 
   const toggleTimer = (id: number) => {
     const task = tasks.find((t) => t.id === id);
-
     if (task?.isRunning) {
       clearInterval(intervalRefs.current[id]);
       delete intervalRefs.current[id];
@@ -31,12 +30,10 @@ const App = () => {
         prev.map((t) => (t.id === id ? { ...t, isRunning: false } : t))
       );
     } else {
-      // Reset seconds to zero and start timer
       setTasks((prev) =>
         prev.map((t) => (t.id === id ? { ...t, isRunning: true } : t))
       );
-
-      intervalRefs.current[id] = setInterval(() => {
+      intervalRefs.current[id] = window.setInterval(() => {
         setTasks((prev) =>
           prev.map((t) => (t.id === id ? { ...t, seconds: t.seconds + 1 } : t))
         );
@@ -63,11 +60,19 @@ const App = () => {
       id: tasks.length + 1,
       name: data.task,
       estimate: (data.hour || 0) * 3600 + data.minutes * 60,
-
-      seconds: 0, // live timer starts from 0 on click
+      seconds: 0,
       isRunning: false,
     };
-    setTasks((prev) => [...prev, newTask]);
+
+    setTasks([...tasks, newTask]);
+
+    axios
+      .post("https://estimate-tracker.shrikant.workers.dev/task/create", {
+        ...newTask,
+        actorId: "system",
+      })
+      .then((res) => setTasks([res.data.data, ...tasks]))
+      .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -98,27 +103,19 @@ const App = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  // const addTasks = () => {
-  //   const newTask = { name: "test", estimate: 3, actorId: "juhee",seconds:0 };
-  //   setTasks([newTask, ...tasks]);
-
-  //   axios
-  //     .post(
-  //       "https://estimate-tracker.shrikant.workers.dev/task/create",
-  //       newTask
-  //     )
-  //     .then((res) => console.log(res));
-  // };
-
   return (
-    <div className="p-4">
-      <EstimateAdd onSubmit={handleAddTask} />
-      <h2 className="text-xl font-bold mb-4">Task Timer Table</h2>
-      <EstimateTable
-        tasks={tasks}
-        onClicked={toggleTimer}
-        onReset={resetTimer}
-      />
+    <div className="min-h-screen bg-gray-50 p-6 text-gray-800">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Task Time Estimation Tracker
+      </h1>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <EstimateAdd onSubmit={handleAddTask} />
+        <EstimateTable
+          tasks={tasks}
+          onClicked={toggleTimer}
+          onReset={resetTimer}
+        />
+      </div>
     </div>
   );
 };
