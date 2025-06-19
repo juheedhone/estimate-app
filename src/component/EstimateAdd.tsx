@@ -12,7 +12,7 @@ const schema = z.object({
     .number({ invalid_type_error: "Hour must be a number" })
     .min(0, "Hour must be >= 0")
     .optional()
-    .or(z.nan()), // Allow empty input
+    .or(z.nan()), 
   minutes: z
     .number({ invalid_type_error: "Minutes is required" })
     .min(0, "Minutes must be >= 0")
@@ -30,7 +30,7 @@ const EstimateAdd = ({ onSubmit }: Props) => {
     reset,
   } = useForm<EstimateAdd>({
     resolver: zodResolver(schema),
-    defaultValues: { task: "" }, // No default for hour & minutes
+    defaultValues: { task: "" }, 
   });
 
   const watchedHour = useWatch({ control, name: "hour" });
