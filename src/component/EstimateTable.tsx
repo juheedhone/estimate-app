@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export interface ITasks {
   id: number;
   name: string;
@@ -14,6 +16,17 @@ interface Props {
 }
 
 const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
+  // ✅ Local state to track completed tasks by their IDs
+  const [completedTasks, setCompletedTasks] = useState<number[]>([]);
+
+  const toggleCompletion = (taskId: number) => {
+    setCompletedTasks((prev) =>
+      prev.includes(taskId)
+        ? prev.filter((id) => id !== taskId)
+        : [...prev, taskId]
+    );
+  };
+
   return (
     <div className="bg-white p-4 rounded-xl shadow-lg overflow-x-auto">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">
@@ -25,8 +38,7 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
             <th className="py-3 px-4 border-r border-gray-200">Task Name</th>
             <th className="py-3 px-4 border-r border-gray-200">Estimation</th>
             <th className="py-3 px-4 border-r border-gray-200">Timer</th>
-            <th className="py-3 px-4 text-center">Actions</th>{" "}
-            {/* ✅ Action header centered */}
+            <th className="py-3 px-4 text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +57,8 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
               liveSeconds
             ).padStart(2, "0")}`;
 
+            const isCompleted = completedTasks.includes(task.id);
+
             return (
               <tr
                 key={task.id}
@@ -53,7 +67,21 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
                 } hover:bg-gray-100`}
               >
                 <td className="py-3 px-4 border-r border-gray-200 relative group">
-                  <div className="truncate max-w-[200px]">{task.name}</div>
+                  <div className="flex items-center gap-2 max-w-[200px] truncate">
+                    <input
+                      type="checkbox"
+                      checked={isCompleted}
+                      onChange={() => toggleCompletion(task.id)}
+                      className="accent-green-500 cursor-pointer"
+                    />
+                    <span
+                      className={`truncate ${
+                        isCompleted ? "line-through text-gray-400" : ""
+                      }`}
+                    >
+                      {task.name}
+                    </span>
+                  </div>
 
                   <div className="absolute z-20 bottom-full right-0 mb-1 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-normal max-w-sm break-words">
                     {task.name}
@@ -61,15 +89,13 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
                 </td>
 
                 <td className="py-3 px-4 border-r border-gray-200">{`${estHours}h ${estMinutes}m`}</td>
+
                 <td className="py-3 px-4 border-r border-gray-200 font-mono">
                   {formattedLiveTime}
                 </td>
+
                 <td className="py-3 px-4 border-gray-200 text-center">
-                  {" "}
-                  {/* ✅ Buttons in center */}
                   <div className="flex justify-center gap-2">
-                    {" "}
-                    {/* ✅ Buttons in single line */}
                     <button
                       onClick={() => {
                         if (task.seconds < task.estimate) onClicked(task.id);
