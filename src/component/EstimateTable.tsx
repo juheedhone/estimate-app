@@ -52,9 +52,14 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
                   index % 2 === 0 ? "bg-white" : "bg-gray-50"
                 } hover:bg-gray-100`}
               >
-                <td className="py-3 px-4 border-r border-gray-200">
-                  {task.name}
+                <td className="py-3 px-4 border-r border-gray-200 relative group">
+                  <div className="truncate max-w-[200px]">{task.name}</div>
+
+                  <div className="absolute z-20 bottom-full right-0 mb-1 px-2 py-1 bg-gray-900 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none whitespace-normal max-w-sm break-words">
+                    {task.name}
+                  </div>
                 </td>
+
                 <td className="py-3 px-4 border-r border-gray-200">{`${estHours}h ${estMinutes}m`}</td>
                 <td className="py-3 px-4 border-r border-gray-200 font-mono">
                   {formattedLiveTime}

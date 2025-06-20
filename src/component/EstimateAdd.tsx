@@ -7,7 +7,7 @@ interface Props {
 }
 
 const schema = z.object({
-  task: z.string().min(3, "Task must be at least 3 characters").max(50),
+  task: z.string().min(3, "Task must be at least 3 characters").max(200),
   hour: z
     .number({ invalid_type_error: "Hour must be a number" })
     .min(0)
