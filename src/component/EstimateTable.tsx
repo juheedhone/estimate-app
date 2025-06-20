@@ -22,9 +22,9 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
       <table className="w-full text-left border-collapse rounded-xl overflow-hidden">
         <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
           <tr>
-            <th className="py-3 px-4 border-r border-gray-300">Task Name</th>
-            <th className="py-3 px-4 border-r border-gray-300">Estimation</th>
-            <th className="py-3 px-4 border-r border-gray-300">Timer</th>
+            <th className="py-3 px-4 border-r border-gray-200">Task Name</th>
+            <th className="py-3 px-4 border-r border-gray-200">Estimation</th>
+            <th className="py-3 px-4 border-r border-gray-200">Timer</th>
             <th className="py-3 px-4 text-center">Actions</th>{" "}
             {/* ✅ Action header centered */}
           </tr>
