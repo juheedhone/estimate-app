@@ -79,14 +79,14 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
                         task.seconds >= task.estimate
                           ? "text-gray-500 cursor-not-allowed bg-gray-100"
                           : task.isRunning
-                          ? "text-red-500 border-red-400 hover:bg-red-200"
+                          ? "text-yellow-500 border-yellow-400 hover:bg-amber-100"
                           : "text-green-500 hover:bg-green-200"
                       }`}
                     >
                       {task.seconds >= task.estimate
                         ? "Time Over"
                         : task.isRunning
-                        ? "Stop"
+                        ? "Pause"
                         : "Start"}
                     </button>
                     <button
