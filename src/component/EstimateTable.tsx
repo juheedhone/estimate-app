@@ -93,16 +93,15 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
                 <td className="py-3 px-4 border-r border-gray-200 font-mono">
                   {formattedLiveTime}
                 </td>
-
                 <td className="py-3 px-4 border-gray-200 text-center">
                   <div className="flex justify-center gap-2">
                     <button
                       onClick={() => {
                         if (task.seconds < task.estimate) onClicked(task.id);
                       }}
-                      disabled={task.seconds >= task.estimate}
+                      disabled={task.seconds >= task.estimate || isCompleted}
                       className={`w-14 py-1 rounded border text-sm font-medium ${
-                        task.seconds >= task.estimate
+                        task.seconds >= task.estimate || isCompleted
                           ? "text-gray-500 cursor-not-allowed bg-gray-100"
                           : task.isRunning
                           ? "text-yellow-500 border-yellow-400 hover:bg-amber-100"
@@ -115,12 +114,19 @@ const EstimateTable = ({ tasks, onClicked, onReset, onDelete }: Props) => {
                         ? "Pause"
                         : "Start"}
                     </button>
+
                     <button
                       onClick={() => onReset(task.id)}
-                      className="w-14 py-1 border rounded text-black hover:bg-gray-300 text-sm"
+                      disabled={isCompleted}
+                      className={`w-14 py-1 border rounded text-black text-sm ${
+                        isCompleted
+                          ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                          : "hover:bg-gray-300"
+                      }`}
                     >
                       Reset
                     </button>
+
                     <button
                       onClick={() => onDelete(task.id)}
                       className="w-14 py-1 border rounded text-red-500 hover:bg-red-200 text-sm"
